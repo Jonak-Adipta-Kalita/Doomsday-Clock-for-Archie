@@ -5,7 +5,7 @@ import { getTime, changeTime } from "../utils/firebase";
 import type { Data } from "../utils/firebase";
 import type { TimeState, RotState } from "./ClockUI";
 
-const Clock = () => {
+const Clock = ({ user }: { user: string }) => {
 	const [loadData, setLoadData] = useState<Data | null>(null);
 	const [time, setTime] = useState<TimeState | null>(null);
 	const [rot, setRot] = useState<RotState | null>(null);
@@ -88,8 +88,13 @@ const Clock = () => {
 					<button
 						className="button"
 						onClick={() => {
-							changeTime({ message: message, time: time.hours })
-							alert("sent!");
+							changeTime({
+								message: message,
+								time: time.hours,
+								user: user,
+								timestamp: new Date().toISOString()
+							})
+							alert("Your Message is Sent!");
 						}}
 					>
 						Change Time

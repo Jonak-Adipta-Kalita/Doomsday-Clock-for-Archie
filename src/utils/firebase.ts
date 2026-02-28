@@ -1,9 +1,11 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, addDoc, setDoc, getDoc, doc } from "firebase/firestore";
+import { getFirestore, setDoc, getDoc, doc, collection } from "firebase/firestore";
 
 export type Data = {
 	message: string;
+	user: string | null;
 	time: number;
+	timestamp: string,
 }
 
 const firebaseConfig = {
@@ -19,25 +21,32 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const db = getFirestore(app);
 
-const docRef = doc(db, "Message", "Jonak") //TODO: Have all the Messages sent :D
+const messagesRef = collection(db, "Messages");
+const latestMessageRef = doc(messagesRef, "latest");
 
 export const getTime = async () => {
-	const data = await getDoc(docRef);
+	const latestMessage = await getDoc(latestMessageRef);
 
-	if (data.exists()) return data.data()
+	if (latestMessage.exists()) return latestMessage.data()
 
-	const newData = {
+	const newData: Data = {
+		message: "",
+		user: null,
 		time: 1,
-		message: ""
-	};
+		timestamp: new Date().toISOString()
+	}
 
-	await setDoc(docRef, newData);
+	await setDoc(latestMessageRef, newData);
 
 	return newData;
 };
 
 export const changeTime = async (data: Data) => {
-	await setDoc(docRef, data)
+	const latestMessage = (await getDoc(latestMessageRef)).data();
+
+	await setDoc(doc(messagesRef, latestMessage.timestamp), latestMessage);
+
+	await setDoc(latestMessageRef, data);
 };
 
 export const loginUser = async (name: string, password: string) => {
