@@ -69,7 +69,14 @@ const Clock = ({ user }: { user: string }) => {
 		<div className="min-h-screen flex flex-col items-center justify-center bg-[#262728] font-['Barlow',sans-serif]">
 			<ClockSVG time={time} rot={rot} />
 
-			<div className="flex space-x-10">
+			<div className="mt-10 md:text-4xl text-2xl px-5 text-center">
+				<p>
+					<span className="text-orange-500 font-semibold">{loadData.user}</span>
+					<span className="text-gray-200">: &ldquo;{loadData.message}&rdquo;</span>
+				</p>
+			</div>
+
+			<div className="flex space-x-10 mt-5 md:mt-10">
 				<div className="flex flex-wrap mt-8">
 					<Control
 						label={"hours"}
@@ -78,7 +85,6 @@ const Clock = ({ user }: { user: string }) => {
 						onDecrement={() => update("hours", "-")}
 					/>
 				</div>
-
 				<div className="flex items-center justify-center md:flex-row flex-col mt-5 space-y-5 md:space-y-0 md:space-x-10">
 					<input
 						className="input"

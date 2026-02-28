@@ -188,7 +188,7 @@ interface ControlProps {
 
 export const Control = ({ label, value, onIncrement, onDecrement }: ControlProps) => {
 	return (
-		<div className="flex flex-col items-center mx-4">
+		<div className="flex flex-col md:flex-row items-center mx-4 md:space-x-5">
 			<button
 				onClick={onIncrement}
 				className="w-12 h-12 rounded-full bg-[#EA3F3F] text-white text-2xl flex items-center justify-center my-2 hover:brightness-110 active:scale-95 transition-transform"
