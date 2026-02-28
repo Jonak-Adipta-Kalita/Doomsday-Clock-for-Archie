@@ -1,0 +1,103 @@
+import { useState, useEffect, useCallback } from "react";
+import { ClockSVG, Control, twelveClock } from "./ClockUI";
+import { getTime, changeTime } from "../utils/firebase";
+
+import type { Data } from "../utils/firebase";
+import type { TimeState, RotState } from "./ClockUI";
+
+const Clock = () => {
+	const [loadData, setLoadData] = useState<Data | null>(null);
+	const [time, setTime] = useState<TimeState | null>(null);
+	const [rot, setRot] = useState<RotState | null>(null);
+	const [message, setMessage] = useState("");
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const data = await getTime();
+			setLoadData(data);
+		};
+
+		fetchData();
+	}, []);
+
+	useEffect(() => {
+		if (!loadData) return;
+
+		const now = new Date();
+		const h = twelveClock(loadData.time);
+		const m = now.getMinutes();
+		const s = now.getSeconds();
+
+		const initial = { hours: h, minutes: m, seconds: s };
+
+		setTime(initial);
+		setRot(initial);
+	}, [loadData]);
+
+	const update = useCallback(
+		(key: keyof TimeState, op: "+" | "-") => {
+			setTime((prev) => {
+				if (!prev) return prev;
+
+				const raw = op === "+" ? prev[key] + 1 : prev[key] - 1;
+				let value: number;
+
+				if (key === "hours") {
+					value = raw > 12 ? 1 : raw === 0 ? 12 : raw;
+				} else {
+					value = raw > 59 ? 0 : raw < 0 ? 59 : raw;
+				}
+
+				return { ...prev, [key]: value };
+			});
+
+			setRot((prev) => {
+				if (!prev) return prev;
+
+				const degrees = op === "+" ? prev[key] + 1 : prev[key] - 1;
+				return { ...prev, [key]: degrees };
+			});
+		},
+		[]
+	);
+
+	if (!time || !rot) {
+		return <div className="min-h-screen flex items-center justify-center text-white font-bold text-2xl">Loading...</div>;
+	}
+
+	return (
+		<div className="min-h-screen flex flex-col items-center justify-center bg-[#262728] font-['Barlow',sans-serif]">
+			<ClockSVG time={time} rot={rot} />
+
+			<div className="flex space-x-10">
+				<div className="flex flex-wrap mt-8">
+					<Control
+						label={"hours"}
+						value={time["hours"]}
+						onIncrement={() => update("hours", "+")}
+						onDecrement={() => update("hours", "-")}
+					/>
+				</div>
+
+				<div className="flex items-center justify-center md:flex-row flex-col mt-5 space-y-5 md:space-y-0 md:space-x-10">
+					<input
+						className="px-4 py-2 w-64 rounded-xl bg-white text-slate-700 placeholder-slate-400 border border-slate-300 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-slate-400 shadow-sm"
+						value={message} onChange={(e) => setMessage(e.target.value!)}
+						placeholder="Write your New Message!"
+					/>
+					<button
+						className="px-5 py-2 rounded-xl bg-[#EA3F3F] text-white font-medium transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-lg shadow-indigo-600/20"
+						onClick={() => {
+							changeTime({ message: message, time: time.hours })
+							alert("sent!");
+						}}
+					>
+						Change Time
+					</button>
+				</div>
+			</div>
+		</div >
+	);
+}
+
+export default Clock;

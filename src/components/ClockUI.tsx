@@ -1,27 +1,27 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { getTime, changeTime } from "./firebase"
-import type { Data } from "./firebase";
+// CodePen UI -> React + Tailwind with Claude
+
+import { useState, useEffect, useRef } from "react";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
-const zeroPadded = (n: number) => (n >= 10 ? String(n) : `0${n}`);
-const twelveClock = (h: number) => (h === 0 ? 12 : h > 12 ? h - 12 : h);
+export const zeroPadded = (n: number) => (n >= 10 ? String(n) : `0${n}`);
+export const twelveClock = (h: number) => (h === 0 ? 12 : h > 12 ? h - 12 : h);
 
-const HOUR_MARKS = Array.from({ length: 12 }, (_, i) => i + 1);
+export const HOUR_MARKS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-interface TimeState {
+export interface TimeState {
 	hours: number;   // 1-12  (display)
 	minutes: number; // 0-59
 	seconds: number; // 0-59
 }
 
-interface RotState {
+export interface RotState {
 	hours: number;   // unbounded integer (cumulative clicks)
 	minutes: number;
 	seconds: number;
 }
 
 // ── animated rotation hook ────────────────────────────────────────────────────
-function useAnimatedRotation(target: number, duration = 400) {
+export const useAnimatedRotation = (target: number, duration = 400) => {
 	const [current, setCurrent] = useState(target);
 	const frameRef = useRef<number | null>(null);
 	const startRef = useRef<number | null>(null);
@@ -60,7 +60,7 @@ interface HandProps {
 	type: "hours" | "minutes" | "seconds";
 }
 
-function ClockHand({ rotation, type }: HandProps) {
+export const ClockHand = ({ rotation, type }: HandProps) => {
 	const animated = useAnimatedRotation(rotation, type === "seconds" ? 300 : 400);
 
 	if (type === "seconds") {
@@ -81,7 +81,7 @@ function ClockHand({ rotation, type }: HandProps) {
 }
 
 // ── MaskHours ─────────────────────────────────────────────────────────────────
-function MaskHours({ hours }: { hours: number }) {
+export const MaskHours = ({ hours }: { hours: number }) => {
 	const rot = useAnimatedRotation(-15 + hours * 30, 400);
 	return (
 		<mask id="mask">
@@ -101,7 +101,7 @@ interface ClockSVGProps {
 	rot: RotState;
 }
 
-function ClockSVG({ time, rot }: ClockSVGProps) {
+export const ClockSVG = ({ time, rot }: ClockSVGProps) => {
 	const minuteRot = useAnimatedRotation(rot.minutes * 6, 400);
 	const secondRot = useAnimatedRotation(rot.seconds * 6, 300);
 	const hourRot = useAnimatedRotation(-15 + rot.hours * 30, 400);
@@ -186,7 +186,7 @@ interface ControlProps {
 	onDecrement: () => void;
 }
 
-function Control({ label, value, onIncrement, onDecrement }: ControlProps) {
+export const Control = ({ label, value, onIncrement, onDecrement }: ControlProps) => {
 	return (
 		<div className="flex flex-col items-center mx-4">
 			<button
@@ -205,107 +205,5 @@ function Control({ label, value, onIncrement, onDecrement }: ControlProps) {
 				−
 			</button>
 		</div>
-	);
-}
-
-// ── Clock (main component) ───────────────────────────────────────────────────
-export default function Clock() {
-	const [loadData, setLoadData] = useState<Data | null>(null);
-	const [time, setTime] = useState<TimeState | null>(null);
-	const [rot, setRot] = useState<RotState | null>(null);
-	const [message, setMessage] = useState("");
-
-	useEffect(() => {
-		const fetchData = async () => {
-			const data = await getTime();
-			setLoadData(data);
-		};
-
-		fetchData();
-	}, []);
-
-	useEffect(() => {
-		if (!loadData) return;
-
-		const now = new Date();
-		const h = twelveClock(loadData.time);
-		const m = now.getMinutes();
-		const s = now.getSeconds();
-
-		const initial = { hours: h, minutes: m, seconds: s };
-
-		setTime(initial);
-		setRot(initial);
-	}, [loadData]);
-
-	const update = useCallback(
-		(key: keyof TimeState, op: "+" | "-") => {
-			setTime((prev) => {
-				if (!prev) return prev;
-
-				const raw = op === "+" ? prev[key] + 1 : prev[key] - 1;
-				let value: number;
-
-				if (key === "hours") {
-					value = raw > 12 ? 1 : raw === 0 ? 12 : raw;
-				} else {
-					value = raw > 59 ? 0 : raw < 0 ? 59 : raw;
-				}
-
-				return { ...prev, [key]: value };
-			});
-
-			setRot((prev) => {
-				if (!prev) return prev;
-
-				const degrees = op === "+" ? prev[key] + 1 : prev[key] - 1;
-				return { ...prev, [key]: degrees };
-			});
-		},
-		[]
-	);
-
-	if (!time || !rot) {
-		return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
-	}
-
-	return (
-		<div className="min-h-screen flex flex-col items-center justify-center bg-[#262728] font-['Barlow',sans-serif]">
-			<p className="text-lg text-gray-200 text-center mb-5">
-				Currently only set for Archita 	&lsaquo;&minus;&rsaquo; Jonak ;&minus;;
-			</p>
-
-			<ClockSVG time={time} rot={rot} />
-
-			<div className="flex flex-wrap mt-8">
-				{(["hours", "minutes", "seconds"] as const).map((key) => (
-					<Control
-						key={key}
-						label={key}
-						value={time[key]}
-						onIncrement={() => update(key, "+")}
-						onDecrement={() => update(key, "-")}
-					/>
-				))}
-			</div>
-
-
-			<div className="flex items-center justify-center mt-5 space-x-10">
-				<input
-					className="px-4 py-2 w-64 rounded-xl bg-white text-slate-700 placeholder-slate-400 border border-slate-300 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-slate-400 shadow-sm"
-					value={message} onChange={(e) => setMessage(e.target.value!)}
-					placeholder="Write your Message!"
-				/>
-				<button
-					className="px-5 py-2 rounded-xl bg-[#EA3F3F] text-white font-medium transition-all duration-200 hover:bg-indigo-500 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-lg shadow-indigo-600/20"
-					onClick={() => {
-						changeTime({ message: message, time: time.hours })
-						alert("sent!");
-					}}
-				>
-					Change Time
-				</button>
-			</div>
-		</div >
 	);
 }
