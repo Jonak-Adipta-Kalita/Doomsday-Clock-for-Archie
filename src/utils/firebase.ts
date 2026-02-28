@@ -9,12 +9,12 @@ export type Data = {
 }
 
 const firebaseConfig = {
-	apiKey: "AIzaSyCMNouWMvMVFt_L-JUa6D4WETqXeZTnJGA",
-	authDomain: "senior-citizen-doomsday-clock.firebaseapp.com",
-	projectId: "senior-citizen-doomsday-clock",
-	storageBucket: "senior-citizen-doomsday-clock.firebasestorage.app",
-	messagingSenderId: "855910342990",
-	appId: "1:855910342990:web:776c592d08b85a45687e1f"
+	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+	authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+	projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+	storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+	messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+	appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
@@ -27,7 +27,7 @@ const latestMessageRef = doc(messagesRef, "latest");
 export const getTime = async () => {
 	const latestMessage = await getDoc(latestMessageRef);
 
-	if (latestMessage.exists()) return latestMessage.data()
+	if (latestMessage.exists()) return latestMessage.data() as Data
 
 	const newData: Data = {
 		message: "",
@@ -44,7 +44,7 @@ export const getTime = async () => {
 export const changeTime = async (data: Data) => {
 	const latestMessage = (await getDoc(latestMessageRef)).data();
 
-	await setDoc(doc(messagesRef, latestMessage.timestamp), latestMessage);
+	await setDoc(doc(messagesRef, latestMessage?.timestamp), latestMessage);
 
 	await setDoc(latestMessageRef, data);
 };
@@ -55,7 +55,7 @@ export const loginUser = async (name: string, password: string) => {
 	try {
 		const userData = (await getDoc(userRef)).data();
 
-		if (userData.password === password) return true;
+		if (userData?.password === password) return true;
 	} catch (err) {
 		return false;
 	}

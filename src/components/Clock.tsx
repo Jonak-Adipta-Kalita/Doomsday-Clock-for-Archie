@@ -71,8 +71,8 @@ const Clock = ({ user }: { user: string }) => {
 
 			<div className="mt-10 md:text-4xl text-2xl px-5 text-center">
 				<p>
-					<span className="text-orange-500 font-semibold">{loadData.user}</span>
-					<span className="text-gray-200">: &ldquo;{loadData.message}&rdquo;</span>
+					<span className="text-orange-500 font-semibold">{loadData?.user}</span>
+					<span className="text-gray-200">: &ldquo;{loadData?.message}&rdquo;</span>
 				</p>
 			</div>
 
