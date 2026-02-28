@@ -1,7 +1,17 @@
 @import "tailwindcss";
 
 @layer base {
-  * {
-    @apply bg-[#262728];
-  }
+	* {
+		@apply bg-[#262728];
+	}
+}
+
+@layer components {
+	.input {
+		@apply px-4 py-2 w-64 rounded-xl bg-white text-slate-700 placeholder-slate-400 border border-slate-300 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 hover:border-slate-400 shadow-sm;
+	}
+
+	.button {
+		@apply px-5 py-2 rounded-xl bg-[#EA3F3F] text-white font-medium transition-all duration-200 cursor-pointer active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-lg shadow-indigo-600/20;
+	}
 }

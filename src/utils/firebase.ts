@@ -19,7 +19,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const db = getFirestore(app);
 
-const docRef = doc(db, "Archita", "Jonak")
+const docRef = doc(db, "Message", "Jonak") //TODO: Have all the Messages sent :D
 
 export const getTime = async () => {
 	const data = await getDoc(docRef);
@@ -38,4 +38,18 @@ export const getTime = async () => {
 
 export const changeTime = async (data: Data) => {
 	await setDoc(docRef, data)
+};
+
+export const loginUser = async (name: string, password: string) => {
+	const userRef = doc(db, "Users", name);
+
+	try {
+		const userData = (await getDoc(userRef)).data();
+
+		if (userData.password === password) return true;
+	} catch (err) {
+		return false;
+	}
+
+	return false;
 };
