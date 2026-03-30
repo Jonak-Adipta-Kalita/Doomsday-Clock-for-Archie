@@ -1,20 +1,26 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, setDoc, getDoc, doc, collection } from "firebase/firestore";
+import {
+  getFirestore,
+  setDoc,
+  getDoc,
+  doc,
+  collection,
+} from "firebase/firestore";
 
 export type Data = {
-	message: string;
-	user: string | null;
-	time: number;
-	timestamp: string,
-}
+  message: string;
+  user: string | null;
+  time: number;
+  timestamp: string;
+};
 
 const firebaseConfig = {
-	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-	authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-	projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-	storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-	messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-	appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
@@ -25,40 +31,40 @@ const messagesRef = collection(db, "Messages");
 const latestMessageRef = doc(messagesRef, "latest");
 
 export const getTime = async () => {
-	const latestMessage = await getDoc(latestMessageRef);
+  const latestMessage = await getDoc(latestMessageRef);
 
-	if (latestMessage.exists()) return latestMessage.data() as Data
+  if (latestMessage.exists()) return latestMessage.data() as Data;
 
-	const newData: Data = {
-		message: "",
-		user: null,
-		time: 1,
-		timestamp: new Date().toISOString()
-	}
+  const newData: Data = {
+    message: "",
+    user: null,
+    time: 1,
+    timestamp: new Date().toISOString(),
+  };
 
-	await setDoc(latestMessageRef, newData);
+  await setDoc(latestMessageRef, newData);
 
-	return newData;
+  return newData;
 };
 
 export const changeTime = async (data: Data) => {
-	const latestMessage = (await getDoc(latestMessageRef)).data();
+  const latestMessage = (await getDoc(latestMessageRef)).data();
 
-	await setDoc(doc(messagesRef, latestMessage?.timestamp), latestMessage);
+  await setDoc(doc(messagesRef, latestMessage?.timestamp), latestMessage);
 
-	await setDoc(latestMessageRef, data);
+  await setDoc(latestMessageRef, data);
 };
 
 export const loginUser = async (name: string, password: string) => {
-	const userRef = doc(db, "Users", name);
+  const userRef = doc(db, "Users", name);
 
-	try {
-		const userData = (await getDoc(userRef)).data();
+  try {
+    const userData = (await getDoc(userRef)).data();
 
-		if (userData?.password === password) return true;
-	} catch (err) {
-		return false;
-	}
+    if (userData?.password === password) return true;
+  } catch (err) {
+    return false;
+  }
 
-	return false;
+  return false;
 };
