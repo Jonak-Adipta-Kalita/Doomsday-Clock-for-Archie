@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @layer base {
-  * {
+  body {
     @apply bg-[#262728];
   }
 }
