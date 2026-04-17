@@ -38,8 +38,8 @@ class Commands(commands.Cog):
     def __init__(self, bot: DiscordBot):
         self.bot = bot
 
-        self.messages_ref = self.bot.db.collection("Messages")
-        self.latest_message_ref = self.messages_ref.document("latest")
+        self.messages_ref = self.bot.messages_ref
+        self.latest_message_ref = self.bot.latest_message_ref
 
     @app_commands.command(name="update", description="Update the message")
     @app_commands.describe(
