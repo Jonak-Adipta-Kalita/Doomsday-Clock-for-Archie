@@ -31,15 +31,14 @@ class PaginationView(View):
 
         embed = discord.Embed(
             color=discord.Color.blue(),
-            timestamp=datetime.fromisoformat(
-                msg["timestamp"].replace("Z", "+00:00"))
+            timestamp=datetime.fromisoformat(msg["timestamp"].replace("Z", "+00:00")),
         )
         embed.add_field(name="Message", value=msg["message"], inline=False)
         embed.add_field(name="Time of Clock", value=f"{
                         msg['time']}/12", inline=True)
         embed.set_footer(
             text=f"{user.name}  •  {self.page + 1}/{len(self.messages)}",
-            icon_url=user.display_avatar.url
+            icon_url=user.display_avatar.url,
         )
 
         return embed
@@ -68,8 +67,10 @@ async def embed_all_messages(messages: list, bot: commands.Bot):
 
 
 def embed_message(message, user: User):
-    embed = Embed(color=Color.blue(), timestamp=datetime.fromisoformat(
-        message["timestamp"].replace("Z", "+00:00")))
+    embed = Embed(
+        color=Color.blue(),
+        timestamp=datetime.fromisoformat(message["timestamp"].replace("Z", "+00:00")),
+    )
 
     embed.add_field(name="Message", value=message["message"], inline=False)
     embed.add_field(name="Time of Clock", value=f"{

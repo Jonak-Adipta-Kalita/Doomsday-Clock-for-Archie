@@ -31,12 +31,14 @@ class DiscordBot(commands.Bot):
         }
         (
             firebase_admin.initialize_app(
-                credential=firebase_admin.credentials.Certificate(creds))
+                credential=firebase_admin.credentials.Certificate(creds)
+            )
             if not len(firebase_admin._apps)
             else firebase_admin.get_app()
         )
 
         self.db = firebase_admin.firestore.client()
+        self.db.collection("Messages").document("latest").on_snapshot(self.on_snapshot)
 
         await self.load_extension("src.commands")
 
@@ -56,3 +58,22 @@ class DiscordBot(commands.Bot):
                 name="Watching over the cute siblinghood",
             ),
         )
+
+    def on_snapshot(self, doc_snapshot, changes, read_time):
+        for change in changes:
+            if change.type.name == "MODIFIED":
+                data = change.document.to_dict()
+                self.loop.create_task(self.dm_user(data))
+
+    async def dm_user(self, data: dict):
+        change_user = data["user"]
+        dm_user_id = None
+
+        if change_user == credentials.BRO_NAME:
+            dm_user_id = int(credentials.SIS_ID)
+        elif change_user == credentials.SIS_NAME:
+            dm_user_id = int(credentials.BRO_ID)
+
+        dm_user = await self.fetch_user(dm_user_id)
+
+        await dm_user.send(f"Clock updated by {change_user}!")
