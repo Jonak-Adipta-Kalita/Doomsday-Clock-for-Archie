@@ -5,6 +5,7 @@ from typing import Optional
 from discord.ext import commands
 from discord import app_commands
 from src.bot import DiscordBot
+from src.embeds import embed_message, embed_all_messages, get_message_user
 
 
 def authenticate(inter: discord.Interaction) -> (bool, str, bool):
@@ -72,15 +73,20 @@ class Commands(commands.Cog):
 
         if bool(all):
             snapshot = self.messages_ref.stream()
-            messages = ([{"id": doc.id, **doc.to_dict()} for doc in snapshot])
+            messages = [{"id": doc.id, **doc.to_dict()} for doc in snapshot]
+            embed, view = await embed_all_messages(messages, self.bot)
 
-            # TODO
+            return await inter.response.send_message(embed=embed, view=view)
+
         else:
             latest_message = self.latest_message_ref.get()
+
             if latest_message.exists:
                 msg = latest_message.to_dict()
+                user = await get_message_user(msg["user"], self.bot.fetch_user)
+                embed = embed_message(msg, user)
 
-                # TODO
+                return await inter.response.send_message(embed=embed)
             else:
                 return await inter.response.send_message("There are no messages, go to the website!")
 
