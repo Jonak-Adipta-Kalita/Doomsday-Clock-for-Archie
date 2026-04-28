@@ -5,36 +5,13 @@ from typing import Optional
 from discord.ext import commands
 from discord import app_commands
 from src.bot import DiscordBot
-from src.embeds import embed_message, embed_all_messages, get_message_user
+from src.doomsdayclock.embeds import embed_message, embed_all_messages, get_message_user
 from datetime import datetime, timezone
 
 
-def authenticate(inter: discord.Interaction) -> (bool, str, bool):
-    user = str(inter.user.id)
-
-    view_allowed = False
-    name = ""
-    edit_allowed = False
-
-    if user == credentials.BRO_ID:
-        view_allowed = True
-        name = credentials.BRO_NAME
-        edit_allowed = True
-    elif user == credentials.SIS_ID:
-        view_allowed = True
-        name = credentials.SIS_NAME
-        edit_allowed = True
-    elif user in credentials.SPECTATOR_IDS.split(","):
-        view_allowed = True
-        edit_allowed = False
-    else:
-        view_allowed = False
-        edit_allowed = False
-
-    return view_allowed, name, edit_allowed
-
-
-class DoomsDayClock(app_commands.Group, name="clock", description="Commands for the Dooms Day Clock"):
+class DoomsDayClock(
+    app_commands.Group, name="clock", description="Commands for the Dooms Day Clock"
+):
     def __init__(self, bot: DiscordBot):
         super().__init__()
 
@@ -55,7 +32,7 @@ class DoomsDayClock(app_commands.Group, name="clock", description="Commands for 
     async def update_message(
         self, inter: discord.Interaction, time: int, message: str, hidden: bool = False
     ):
-        view_allowed, name, edit_allowed = authenticate(inter)
+        view_allowed, name, edit_allowed = self.bot.authenticate(inter)
 
         if not view_allowed or not edit_allowed:
             return await inter.response.send_message(
@@ -64,8 +41,7 @@ class DoomsDayClock(app_commands.Group, name="clock", description="Commands for 
 
         now = datetime.now(timezone.utc)
         timestamp = (
-            now.strftime("%Y-%m-%dT%H:%M:%S.") +
-            f"{now.microsecond // 1000:03d}Z"
+            now.strftime("%Y-%m-%dT%H:%M:%S.") + f"{now.microsecond // 1000:03d}Z"
         )
 
         username = ""
@@ -82,8 +58,7 @@ class DoomsDayClock(app_commands.Group, name="clock", description="Commands for 
         }
 
         latest_message = self.latest_message_ref.get().to_dict()
-        self.messages_ref.document(
-            latest_message["timestamp"]).set(latest_message)
+        self.messages_ref.document(latest_message["timestamp"]).set(latest_message)
         self.latest_message_ref.set(message_obj)
 
         embed = embed_message(message_obj, inter.user)
@@ -103,7 +78,7 @@ class DoomsDayClock(app_commands.Group, name="clock", description="Commands for 
         all: Optional[bool] = None,
         hidden: bool = False,
     ):
-        view_allowed, name, edit_allowed = authenticate(inter)
+        view_allowed, name, edit_allowed = self.bot.authenticate(inter)
 
         if not view_allowed:
             return await inter.response.send_message(
@@ -133,11 +108,11 @@ class DoomsDayClock(app_commands.Group, name="clock", description="Commands for 
                 )
 
 
-class Commands(commands.Cog):
+class DoomsDayClockCommands(commands.Cog):
     def __init__(self, bot: DiscordBot):
         self.bot = bot
         self.bot.tree.add_command(DoomsDayClock(bot))
 
 
 async def setup(bot: DiscordBot):
-    await bot.add_cog(Commands(bot))
+    await bot.add_cog(DoomsDayClockCommands(bot))

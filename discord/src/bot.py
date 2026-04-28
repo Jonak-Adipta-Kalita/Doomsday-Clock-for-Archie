@@ -3,14 +3,10 @@ import credentials
 import firebase_admin
 import firebase_admin.credentials
 import firebase_admin.firestore
+import src.doomsdayclock.onload
 
 from discord.ext import commands
-from src.timestamp import (
-    write_stored_timestamp,
-    read_stored_timestamp,
-    parse_timestamp,
-    format_timestamp,
-)
+from discord import app_commands
 
 
 class DiscordBot(commands.Bot):
@@ -20,6 +16,10 @@ class DiscordBot(commands.Bot):
             intents=discord.Intents.all(),
             help_command=None,
             description="Discord Interface for https://doomsday-clock-for-archie.vercel.app/",
+            allowed_contexts=app_commands.AppCommandContext(
+                guild=True, dm_channel=True, private_channel=True
+            ),
+            allowed_installs=app_commands.AppInstallationType(guild=False, user=True),
         )
 
     async def setup_hook(self):
@@ -48,10 +48,12 @@ class DiscordBot(commands.Bot):
         self.messages_ref = self.db.collection("Messages")
         self.latest_message_ref = self.messages_ref.document("latest")
 
-        self.latest_message_ref.on_snapshot(self.on_snapshot)
-        await self.on_load_check_change()
+        self.doomsday_onload = src.doomsdayclock.onload.OnLoad(self)
+        self.latest_message_ref.on_snapshot(self.doomsday_onload.on_snapshot)
+        await self.doomsday_onload.on_load_check_change()
 
-        await self.load_extension("src.commands.doomsday-clock")
+        await self.load_extension("src.doomsdayclock.commands")
+        await self.load_extension("src.neko.commands")
 
     async def on_connect(self):
         print("Bot Connected!")
@@ -70,54 +72,26 @@ class DiscordBot(commands.Bot):
             ),
         )
 
-    async def on_load_check_change(self):
-        latest = self.latest_message_ref.get().to_dict()
-        if not latest:
-            return
+    def authenticate(self, inter: discord.Interaction) -> (bool, str, bool):
+        user = str(inter.user.id)
 
-        stored = read_stored_timestamp()
+        view_allowed = False
+        name = ""
+        edit_allowed = False
 
-        if stored is None:
-            write_stored_timestamp(latest["timestamp"])
-            return
+        if user == credentials.BRO_ID:
+            view_allowed = True
+            name = credentials.BRO_NAME
+            edit_allowed = True
+        elif user == credentials.SIS_ID:
+            view_allowed = True
+            name = credentials.SIS_NAME
+            edit_allowed = True
+        elif user in credentials.SPECTATOR_IDS.split(","):
+            view_allowed = True
+            edit_allowed = False
+        else:
+            view_allowed = False
+            edit_allowed = False
 
-        latest_ts = parse_timestamp(latest["timestamp"])
-
-        if latest_ts <= stored:
-            return
-
-        snapshot = self.messages_ref.stream()
-        all_messages = [{"id": doc.id, **doc.to_dict()} for doc in snapshot]
-        new_messages = [
-            m
-            for m in all_messages
-            if m["id"] != "latest" and parse_timestamp(m["timestamp"]) > stored
-        ]
-        new_messages.sort(key=lambda m: parse_timestamp(m["timestamp"]))
-
-        for msg in new_messages:
-            await self.dm_user(msg)
-
-        write_stored_timestamp(latest["timestamp"])
-
-    def on_snapshot(self, doc_snapshot, changes, read_time):
-        for change in changes:
-            if change.type.name == "MODIFIED":
-                data = change.document.to_dict()
-                self.loop.create_task(self.dm_user(data))
-
-    async def dm_user(self, data: dict):
-        change_user = data["user"]
-        dm_user_id = None
-        if change_user == credentials.BRO_NAME:
-            dm_user_id = int(credentials.SIS_ID)
-        elif change_user == credentials.SIS_NAME:
-            dm_user_id = int(credentials.BRO_ID)
-
-        if dm_user_id is None:
-            return
-
-        dm_user = await self.fetch_user(dm_user_id)
-        await dm_user.send(f"Clock updated by {change_user} @ {
-            format_timestamp(data['timestamp'])}!")
-        write_stored_timestamp(data["timestamp"])
+        return view_allowed, name, edit_allowed
