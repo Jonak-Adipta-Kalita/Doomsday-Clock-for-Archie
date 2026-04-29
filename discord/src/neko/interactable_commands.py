@@ -59,8 +59,8 @@ class InteractableCommands(
 
         def make_button(cfg: ButtonCfg):
             act = get_act(cfg.name)
-            msg = f"**{inter.user.display_name}** {
-                act[2]} **{user.display_name}**"
+            msg = f"**{user.display_name}** {
+                act[2]} **{inter.user.display_name}**"
 
             if is_interactable(cfg.name):
                 get_data_ = self.db_interact(cfg.name, inter.user.id)
@@ -84,7 +84,8 @@ class InteractableCommands(
         ref = self.bot.db.collection("Nekotina").document(str(user_id))
         doc = ref.get()
 
-        new_total = (doc.to_dict() or {}).get(act_name, 0) + 1 if doc.exists else 1
+        new_total = (doc.to_dict() or {}).get(
+            act_name, 0) + 1 if doc.exists else 1
         ref.set({act_name: new_total}, merge=True)
         return new_total
 
