@@ -51,16 +51,15 @@ class InteractableCommands(
         data = await self.neko.get_image(act_name)
 
         get_data = self.db_interact(act_name, user.id)
+        act_data = get_act(act_name)
 
-        message = f"**{inter.user.display_name}** {get_act(act_name)[2]} **{
-            user.display_name}**\n_{user.display_name} {get_act(act_name, True)[4]} {get_data} times_"
+        message = f"**{inter.user.display_name}** {act_data[2]} **{
+            user.display_name}**\n_{user.display_name} {act_data[4]} {get_data} times_"
 
         view = InteractableView([])
 
         def make_button(cfg: ButtonCfg):
-            if cfg is None:
-                return None
-            act = get_act(cfg.name)
+            act = get_act(cfg.name, True)
 
             async def on_press(btn_inter: discord.Interaction) -> str:
                 get_data_ = self.db_interact(cfg.name, btn_inter.user.id)
@@ -87,7 +86,8 @@ class InteractableCommands(
         ref = self.bot.db.collection("Nekotina").document(str(user_id))
         doc = ref.get()
 
-        new_total = (doc.to_dict() or {}).get(act_name, 0) + 1 if doc.exists else 1
+        new_total = (doc.to_dict() or {}).get(
+            act_name, 0) + 1 if doc.exists else 1
         ref.set({act_name: new_total}, merge=True)
         return new_total
 
