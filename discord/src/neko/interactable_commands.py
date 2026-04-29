@@ -50,8 +50,8 @@ class InteractableCommands(
         await inter.response.defer()
         data = await self.neko.get_image(act_name)
 
-        get_data = self.db_interact(act_name, user.id)
-        act_data = get_act(act_name)
+        act_data = get_act(act_name, True)
+        get_data = self.db_interact(act_data[0], user.id)
 
         message = f"**{inter.user.display_name}** {act_data[2]} **{
             user.display_name}**\n_{user.display_name} {act_data[4]} {get_data} times_"
@@ -59,10 +59,10 @@ class InteractableCommands(
         view = InteractableView([])
 
         def make_button(cfg: ButtonCfg):
-            act = get_act(cfg.name, True)
+            act = get_act(cfg.name)
 
             async def on_press(btn_inter: discord.Interaction) -> str:
-                get_data_ = self.db_interact(cfg.name, btn_inter.user.id)
+                get_data_ = self.db_interact(act[0], btn_inter.user.id)
                 msg = f"**{btn_inter.user.display_name}** {act[2]}"
                 if is_interactable(cfg.name):
                     msg += f" **{inter.user.display_name}**\n_{
