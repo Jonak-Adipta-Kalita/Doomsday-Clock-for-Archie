@@ -3,20 +3,22 @@ from nekosbest import Client as Neko
 from discord.ext import commands
 from discord import app_commands
 from src.bot import DiscordBot
+from src.neko.act_commands import add_act_commands
+from src.neko.interactable_commands import InteractableCommands
 
 
-class Nekotina(app_commands.Group, name="nekotina", description="uWu"):
+class NekotinaCog(commands.Cog):
     def __init__(self, bot: DiscordBot, neko: Neko):
-        super().__init__()
-
-
-class NekoCommands(commands.Cog):
-    def __init__(self, bot: DiscordBot):
         self.bot = bot
-        self.neko = Neko()
+        self.neko = neko
 
-        self.bot.tree.add_command(Nekotina(bot, self.neko))
+        self.nekotina = app_commands.Group(name="nekotina", description="Act uWu")
+
+        add_act_commands(self.nekotina, self.bot, self.neko)
+        self.nekotina.add_command(InteractableCommands(bot, neko))
+
+        self.bot.tree.add_command(self.nekotina)
 
 
 async def setup(bot: DiscordBot):
-    await bot.add_cog(NekoCommands(bot))
+    await bot.add_cog(NekotinaCog(bot, Neko()))

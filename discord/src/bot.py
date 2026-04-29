@@ -58,19 +58,21 @@ class DiscordBot(commands.Bot):
     async def on_connect(self):
         print("Bot Connected!")
 
+        # TODO: Not Work
+
+        await self.change_presence(
+            status=discord.Status.online,
+            activity=discord.Activity(
+                name="Watching over the cute siblinghood",
+                type=discord.ActivityType.watching,
+            ),
+        )
+
     async def on_disconnect(self):
         print("Bot is Disconnected!!")
 
     async def on_ready(self):
         await self.tree.sync()
-
-        await self.change_presence(
-            status=discord.Status.online,
-            activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name="Watching over the cute siblinghood",
-            ),
-        )
 
     def authenticate(self, inter: discord.Interaction) -> (bool, str, bool):
         user = str(inter.user.id)
