@@ -18,6 +18,14 @@ class ButtonCfg:
     style: discord.ButtonStyle = discord.ButtonStyle.grey
 
 
+punish_buttons = [
+    ButtonCfg("Kick", "🦵"),
+    ButtonCfg("Punch", "👊"),
+    ButtonCfg("Shoot", "🔫"),
+    ButtonCfg("Slap", "🖐️")
+]
+
+
 class InteractableCommands(
     app_commands.Group, name="interact", description="uWu Interactable Commands"
 ):
@@ -63,6 +71,94 @@ class InteractableCommands(
         )
         view.message = msg
 
+    @app_commands.command(name="lappillow", description="Let someone use your lap as a pillow")
+    async def lappillow(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(inter, "lappillow", user, buttons_cfg=[])
+
+    @app_commands.command(name="lurk", description="Lurk around someone")
+    async def lurk(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(inter, "lurk", user, buttons_cfg=[])
+
+    @app_commands.command(name="bite", description="Bite someone")
+    async def bite(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "bite", user,
+            buttons_cfg=[
+                ButtonCfg("Bite", "🦷"),
+                random.choice(punish_buttons),
+            ],
+        )
+
+    @app_commands.command(name="bonk", description="Bonk someone")
+    async def bonk(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "bonk", user,
+            buttons_cfg=[ButtonCfg("Bonk", "🔨")],
+        )
+
+    @app_commands.command(name="blowkiss", description="Blow a kiss to someone")
+    async def blowkiss(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "blowkiss", user,
+            buttons_cfg=[ButtonCfg("Blowkiss", "💨💋")],
+        )
+
+    @app_commands.command(name="carry", description="Carry someone")
+    async def carry(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(inter, "carry", user, buttons_cfg=[])
+
+    @app_commands.command(name="cuddle", description="Cuddle with someone")
+    async def cuddle(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "cuddle", user,
+            buttons_cfg=[ButtonCfg("Cuddle", "🤗")],
+        )
+
+    @app_commands.command(name="handshake", description="Shake hands with someone")
+    async def handshake(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "handshake", user,
+            buttons_cfg=[ButtonCfg("Handshake", "🤝")],
+        )
+
+    @app_commands.command(name="handhold", description="Hold hands with someone")
+    async def handhold(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "handhold", user,
+            buttons_cfg=[ButtonCfg("Handhold", "🫱🫲")],
+        )
+
+    @app_commands.command(name="highfive", description="High five someone")
+    async def highfive(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "highfive", user,
+            buttons_cfg=[ButtonCfg("Highfive", "🙌")],
+        )
+
+    @app_commands.command(name="feed", description="Feed someone")
+    async def feed(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "feed", user,
+            buttons_cfg=[ButtonCfg("Nom", "😋")],
+        )
+
+    @app_commands.command(name="hug", description="Hug someone")
+    async def hug(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "hug", user,
+            buttons_cfg=[ButtonCfg("Hug", "🤗")],
+        )
+
+    @app_commands.command(name="kick", description="Kick someone")
+    async def kick(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "kick", user,
+            buttons_cfg=[
+                ButtonCfg("Kick", "🦵"),
+                ButtonCfg("Cry", "😢"),
+            ],
+        )
+
     @app_commands.command(name="kabedon", description="Pin someone against wall")
     async def kabedon(self, inter: discord.Interaction, user: discord.User):
         await self.interact_command(
@@ -71,13 +167,87 @@ class InteractableCommands(
             user,
             buttons_cfg=[
                 ButtonCfg("Kiss", "💖"),
-                random.choice(
-                    [
-                        ButtonCfg("Kick", "🦵"),
-                        ButtonCfg("Punch", "👊"),
-                        ButtonCfg("Shoot", "🔫"),
-                        ButtonCfg("Slap", "🖐️"),
-                    ]
-                ),
+                random.choice(punish_buttons),
             ],
         )
+
+    @app_commands.command(name="kiss", description="Kiss someone")
+    async def kiss(self, inter: discord.Interaction, user: discord.User, cheeks: bool = False):
+        await self.interact_command(
+            inter, "kiss" if not cheeks else "peck", user,
+            buttons_cfg=[
+                ButtonCfg("Kiss", "💖"),
+                random.choice(punish_buttons) if not cheeks else None
+            ]
+        )
+
+    @app_commands.command(name="pat", description="Pat someone")
+    async def pat(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "pat", user,
+            buttons_cfg=[
+                ButtonCfg("Happy", "😊"),
+                random.choice(punish_buttons),
+            ],
+        )
+
+    @app_commands.command(name="poke", description="Poke someone")
+    async def poke(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "poke", user,
+            buttons_cfg=[ButtonCfg("Poke", "👉")],
+        )
+
+    @app_commands.command(name="punch", description="Punch someone")
+    async def punch(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "punch", user,
+            buttons_cfg=[ButtonCfg("Punch", "👊")],
+        )
+
+    @app_commands.command(name="shoot", description="Shoot someone")
+    async def shoot(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "shoot", user,
+            buttons_cfg=[ButtonCfg("Shoot", "🔫")],
+        )
+
+    @app_commands.command(name="shake", description="Shake someone")
+    async def shake(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(inter, "shake", user, buttons_cfg=[])
+
+    @app_commands.command(name="slap", description="Slap someone")
+    async def slap(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "slap", user,
+            buttons_cfg=[ButtonCfg("Slap", "🖐️")],
+        )
+
+    @app_commands.command(name="tickle", description="Tickle someone")
+    async def tickle(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "tickle", user,
+            buttons_cfg=[ButtonCfg("Laugh", "😂")],
+        )
+
+    @app_commands.command(name="wave", description="Wave at someone")
+    async def wave(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "wave", user,
+            buttons_cfg=[ButtonCfg("Wave", "👋")],
+        )
+
+    @app_commands.command(name="wink", description="Wink at someone")
+    async def wink(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(
+            inter, "wink", user,
+            buttons_cfg=[
+                ButtonCfg("Wink", "😉"),
+                random.choice(punish_buttons),
+            ],
+        )
+
+    @app_commands.command(name="yeet", description="Yeet someone")
+    async def yeet(self, inter: discord.Interaction, user: discord.User):
+        await self.interact_command(inter, "yeet", user, buttons_cfg=[])
+
