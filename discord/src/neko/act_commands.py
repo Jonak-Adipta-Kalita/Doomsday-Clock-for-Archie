@@ -15,7 +15,8 @@ positive_acts = [
     ("clap", "Clap", "is clapping it up!", "Give a round of applause!"),
     ("dance", "Dance", "is busting a move!", "Bust a move on the dance floor!"),
     ("happy", "Happy", "is super happy!", "Radiate pure joy and happiness!"),
-    ("laugh", "Laugh", "is dying of laughter!", "Burst out in contagious laughter!"),
+    ("laugh", "Laugh", "is dying of laughter!",
+     "Burst out in contagious laughter!"),
     ("nod", "Nod", "is nodding along!", "Show your agreement with a nod!"),
     ("nom", "Nom", "is nomming away!", "Munch away on something delicious!"),
     ("run", "Run", "just zoomed off!", "Zoom off at full speed!"),
@@ -23,7 +24,8 @@ positive_acts = [
     ("sip", "Sip", "is sipping away~", "Take a slow, satisfying sip!"),
     ("smile", "Smile", "is all smiles!", "Flash a warm, cheerful smile!"),
     ("spin", "Spin", "is spinning around!", "Twirl around like a top!"),
-    ("teehee", "Giggle", "is giggling away!", "Let out an adorable little giggle!"),
+    ("teehee", "Giggle", "is giggling away!",
+     "Let out an adorable little giggle!"),
     (
         "thumbsup",
         "Thumbsup",
@@ -47,13 +49,15 @@ neutral_acts = [
     ("shrug", "Shrug", "just shrugged lol", "Shrug it off — who knows!"),
     ("sleep", "Sleep", "is out cold!", "Catch some well-deserved Zzz's!"),
     ("smug", "Smug", "is looking real smug rn", "Flash that signature smug look!"),
-    ("stare", "Stare", "is just... staring", "Fix an unblinking stare into the void!"),
+    ("stare", "Stare", "is just... staring",
+     "Fix an unblinking stare into the void!"),
     ("think", "Think", "is big brain thinking rn", "Hmm... deep in thought!"),
     ("yawn", "Yawn", "let out a huge yawn!", "Let out a big, sleepy yawn!"),
 ]
 
 negative_acts = [
-    ("angry", "Angry", "is absolutely fuming!!", "Let everyone know you're fuming!"),
+    ("angry", "Angry", "is absolutely fuming!!",
+     "Let everyone know you're fuming!"),
     ("cry", "Cry", "is literally crying rn", "Let the tears flow freely!"),
     (
         "facepalm",

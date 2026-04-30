@@ -58,17 +58,17 @@ class InteractableCommands(
 
         view = InteractableView([])
 
-        # BUG: Remove on_press and let the stupid thing handle it
-
         def make_button(cfg: ButtonCfg):
             act = get_act(cfg.name)
 
-            async def on_press(btn_inter: discord.Interaction) -> str:
-                get_data_ = self.db_interact(act[0], btn_inter.user.id)
-                msg = f"**{btn_inter.user.display_name}** {act[2]}"
+            async def on_press() -> str:
+                get_data_ = self.db_interact(act[0], inter.user.id)
+                msg = f"**{inter.user.display_name}** {act[2]}"
+
                 if is_interactable(cfg.name):
                     msg += f" **{inter.user.display_name}**\n_{
                         inter.user.display_name} {act[4]} {get_data_} times_"
+
                 return msg
 
             return buttons(
@@ -88,8 +88,10 @@ class InteractableCommands(
         ref = self.bot.db.collection("Nekotina").document(str(user_id))
         doc = ref.get()
 
-        new_total = (doc.to_dict() or {}).get(act_name, 0) + 1 if doc.exists else 1
+        new_total = (doc.to_dict() or {}).get(
+            act_name, 0) + 1 if doc.exists else 1
         ref.set({act_name: new_total}, merge=True)
+
         return new_total
 
     @app_commands.command(
@@ -129,7 +131,7 @@ class InteractableCommands(
             inter,
             "blowkiss",
             user,
-            buttons_cfg=[ButtonCfg("Blowkiss", "💨💋")],
+            buttons_cfg=[ButtonCfg("Blow Kiss", "💨💋")],
         )
 
     @app_commands.command(name="carry", description="Carry someone")
@@ -160,7 +162,7 @@ class InteractableCommands(
             inter,
             "handhold",
             user,
-            buttons_cfg=[ButtonCfg("Handhold", "🫱🫲")],
+            buttons_cfg=[ButtonCfg("Hand Hold", "🫱🫲")],
         )
 
     @app_commands.command(name="highfive", description="High five someone")
@@ -169,7 +171,7 @@ class InteractableCommands(
             inter,
             "highfive",
             user,
-            buttons_cfg=[ButtonCfg("Highfive", "🙌")],
+            buttons_cfg=[ButtonCfg("High Five", "🙌")],
         )
 
     @app_commands.command(name="feed", description="Feed someone")
@@ -223,7 +225,8 @@ class InteractableCommands(
             "kiss" if not cheeks else "peck",
             user,
             buttons_cfg=[
-                ButtonCfg("Kiss", "💖") if not cheeks else ButtonCfg("Peck", "💖"),
+                ButtonCfg("Kiss", "💖") if not cheeks else ButtonCfg(
+                    "Peck", "💖"),
                 random.choice(punish_buttons) if not cheeks else None,
             ],
         )

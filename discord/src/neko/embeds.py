@@ -70,12 +70,13 @@ def buttons(
         view.disable_all()
         await inter.edit_original_response(view=view)
 
-        resolved_message = await message(inter) if callable(message) else message
+        resolved_message = await message() if callable(message) else message
 
         data_ = await neko.get_image(act[0])
         await inter.followup.send(embed=act_embed(name, resolved_message, data_))
 
-    button = ui.Button(label=name, style=style, custom_id=name.lower(), emoji=emoji)
+    button = ui.Button(label=name, style=style,
+                       custom_id=name.lower(), emoji=emoji)
     button.callback = callback
 
     return button
