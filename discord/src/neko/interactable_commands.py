@@ -88,8 +88,7 @@ class InteractableCommands(
         ref = self.bot.db.collection("Nekotina").document(str(user_id))
         doc = ref.get()
 
-        new_total = (doc.to_dict() or {}).get(
-            act_name, 0) + 1 if doc.exists else 1
+        new_total = (doc.to_dict() or {}).get(act_name, 0) + 1 if doc.exists else 1
         ref.set({act_name: new_total}, merge=True)
 
         return new_total
@@ -98,7 +97,14 @@ class InteractableCommands(
         name="lappillow", description="Let someone use your lap as a pillow"
     )
     async def lappillow(self, inter: discord.Interaction, user: discord.User):
-        await self.interact_command(inter, "lappillow", user, buttons_cfg=[])
+        await self.interact_command(
+            inter,
+            "lappillow",
+            user,
+            buttons_cfg=[
+                ButtonCfg("Happy", "😊"),
+            ],
+        )
 
     @app_commands.command(name="lurk", description="Lurk around someone")
     async def lurk(self, inter: discord.Interaction, user: discord.User):
@@ -225,8 +231,7 @@ class InteractableCommands(
             "kiss" if not cheeks else "peck",
             user,
             buttons_cfg=[
-                ButtonCfg("Kiss", "💖") if not cheeks else ButtonCfg(
-                    "Peck", "💖"),
+                ButtonCfg("Kiss", "💖") if not cheeks else ButtonCfg("Peck", "💖"),
                 random.choice(punish_buttons) if not cheeks else None,
             ],
         )

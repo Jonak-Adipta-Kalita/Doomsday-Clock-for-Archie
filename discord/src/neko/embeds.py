@@ -75,8 +75,7 @@ def buttons(
         data_ = await neko.get_image(act[0])
         await inter.followup.send(embed=act_embed(name, resolved_message, data_))
 
-    button = ui.Button(label=name, style=style,
-                       custom_id=name.lower(), emoji=emoji)
+    button = ui.Button(label=name, style=style, custom_id=name.lower(), emoji=emoji)
     button.callback = callback
 
     return button
