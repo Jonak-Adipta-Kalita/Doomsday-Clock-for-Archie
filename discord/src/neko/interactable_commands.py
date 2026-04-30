@@ -63,7 +63,7 @@ class InteractableCommands(
 
             async def on_press() -> str:
                 get_data_ = self.db_interact(act[0], inter.user.id)
-                msg = f"**{inter.user.display_name}** {act[2]}"
+                msg = f"**{user.display_name}** {act[2]}"
 
                 if is_interactable(cfg.name):
                     msg += f" **{inter.user.display_name}**\n_{
