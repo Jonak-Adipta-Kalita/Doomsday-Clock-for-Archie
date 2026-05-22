@@ -1,14 +1,14 @@
 import discord
 import random
+import credentials
 
 from nekosbest import Client as Neko
+from dataclasses import dataclass
 
 from discord import app_commands
 from src.neko.embeds import InteractableView, act_embed, buttons
 from src.bot import DiscordBot
 from src.neko.act_commands import get_act, is_interactable
-
-from dataclasses import dataclass
 
 
 @dataclass
@@ -229,6 +229,9 @@ class InteractableCommands(
     async def kiss(
         self, inter: discord.Interaction, user: discord.User, cheeks: bool = True
     ):
+        if not cheeks and user.user_id == credentials.SIS_ID:
+            return await inter.response.send_message("Don\'t you fucking dare 🔪")
+
         await self.interact_command(
             inter,
             "kiss" if not cheeks else "peck",
