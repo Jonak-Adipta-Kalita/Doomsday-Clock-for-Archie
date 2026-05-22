@@ -74,15 +74,7 @@ class InteractableCommands(
                 return msg
 
             return buttons(
-                cfg.name,
-                on_press,
-                self.neko,
-                act,
-                cfg.emoji,
-                user,
-                cfg.style,
-                view,
-                data,
+                cfg.name, on_press, self.neko, act, cfg.emoji, user, cfg.style, view, data
             )
 
         btns = [make_button(cfg) for cfg in buttons_cfg if cfg is not None]
@@ -98,7 +90,8 @@ class InteractableCommands(
         ref = self.bot.db.collection("Nekotina").document(str(user_id))
         doc = ref.get()
 
-        new_total = (doc.to_dict() or {}).get(act_name, 0) + 1 if doc.exists else 1
+        new_total = (doc.to_dict() or {}).get(
+            act_name, 0) + 1 if doc.exists else 1
         ref.set({act_name: new_total}, merge=True)
 
         return new_total
@@ -174,6 +167,9 @@ class InteractableCommands(
 
     @app_commands.command(name="handhold", description="Hold hands with someone")
     async def handhold(self, inter: discord.Interaction, user: discord.User):
+        if str(user.id) == credentials.SIS_ID:
+            return await inter.response.send_message("Don\'t you fucking dare 🔪")
+
         await self.interact_command(
             inter,
             "handhold",
@@ -222,6 +218,9 @@ class InteractableCommands(
 
     @app_commands.command(name="kabedon", description="Pin someone against wall")
     async def kabedon(self, inter: discord.Interaction, user: discord.User):
+        if str(user.id) == credentials.SIS_ID:
+            return await inter.response.send_message("Don\'t you fucking dare 🔪")
+
         await self.interact_command(
             inter,
             "kabedon",
@@ -237,14 +236,15 @@ class InteractableCommands(
         self, inter: discord.Interaction, user: discord.User, cheeks: bool = True
     ):
         if not cheeks and str(user.id) == credentials.SIS_ID:
-            return await inter.response.send_message("Don't you fucking dare 🔪")
+            return await inter.response.send_message("Don\'t you fucking dare 🔪")
 
         await self.interact_command(
             inter,
             "kiss" if not cheeks else "peck",
             user,
             buttons_cfg=[
-                ButtonCfg("Kiss", "💖") if not cheeks else ButtonCfg("Peck", "💖"),
+                ButtonCfg("Kiss", "💖") if not cheeks else ButtonCfg(
+                    "Peck", "💖"),
                 random.choice(punish_buttons) if not cheeks else None,
             ],
         )
