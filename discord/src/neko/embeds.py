@@ -86,8 +86,7 @@ def buttons(
         data_ = await get_new_data(neko, original_data, act[0])
         await inter.followup.send(embed=act_embed(name, resolved_message, data_))
 
-    button = ui.Button(label=name, style=style,
-                       custom_id=name.lower(), emoji=emoji)
+    button = ui.Button(label=name, style=style, custom_id=name.lower(), emoji=emoji)
     button.callback = callback
 
     return button
