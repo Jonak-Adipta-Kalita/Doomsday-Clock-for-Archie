@@ -229,7 +229,7 @@ class InteractableCommands(
     async def kiss(
         self, inter: discord.Interaction, user: discord.User, cheeks: bool = True
     ):
-        if not cheeks and user.user_id == credentials.SIS_ID:
+        if not cheeks and user.id == credentials.SIS_ID:
             return await inter.response.send_message("Don\'t you fucking dare 🔪")
 
         await self.interact_command(
